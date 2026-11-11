@@ -45,7 +45,13 @@ export function RatingDisplay({
   return (
     <span className={`rating rating-${size} ${value == null ? 'rating-none' : ''}`} title={title ?? label} aria-label={label} role="img">
       <span className="rating-num" aria-hidden>
-        {showPips ? formatRating(value) : value == null ? '—' : `★ ${formatRating(value)}`}
+        {showPips || value == null ? (
+          formatRating(value) || '—'
+        ) : (
+          <>
+            <span className="rating-star">★</span> {formatRating(value)}
+          </>
+        )}
       </span>
       {showPips && (
         <span className="stars" aria-hidden>

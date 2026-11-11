@@ -39,3 +39,15 @@
   .env.example. Without env vars the app stays local-only (Dexie), so tests are unchanged.
 - Checks: tsc clean, 34 tests pass, build OK. Browser: sign-in screen at 1280 and 375 with a placeholder
   project (validation, no overflow, no console errors). Not yet exercised against a real Supabase project.
+
+## Session 5 — 2026-11-11: UI/UX refresh
+- Reference sites: Mobbin, Refero and Screenlane need a sign-in (no account made); took patterns from the open pages
+  of Mobbin, Refero, Behance and Collect UI (see findings.md).
+- Changed: design tokens (type scale, radii, control height, shadows), buttons/fields/chips/menus/dialogs/toasts,
+  top bar and tab bar, food cards, table, analytics insights, map list, sign-in card. Journal page rebuilt: date as
+  headline, WeekStrip (jumps to a day), composer button, Day with a date rail, first-run welcome with a large plate.
+  New `dayParts` in domain/dates.ts. Map rows no longer repeat the rating. Compact rating star is yolk-coloured.
+- Added `dev-local` launch config (port 5175, Supabase env blanked) so the app can be previewed without signing in.
+- Checks: tsc clean, 34 tests pass, build OK, no console errors. Browser at 1280 and 375: Journal, Foods, Discover,
+  Analytics, Map, food detail panel, log dialog, confirm dialog, first-run welcome, sign-in screen; week strip jump
+  and composer verified; no horizontal overflow at 375 on Journal. Not exercised: signed-in cloud mode, photo thumbnails.

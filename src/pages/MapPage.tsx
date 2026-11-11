@@ -275,7 +275,8 @@ export function MapPage() {
                         {[dist != null ? formatDistance(dist) : null, `${pluralize(place.visits, 'visit')}`, place.foods[0]?.name].filter(Boolean).join(', ')}
                       </span>
                     </span>
-                    <RatingDisplay value={place.avgRating} size="sm" />
+                    {/* The bubble already shows the rating unless it holds a photo. */}
+                    {place.photoId && photos.get(place.photoId) && <RatingDisplay value={place.avgRating} size="sm" showPips={false} />}
                   </button>
                 </li>
               ))}

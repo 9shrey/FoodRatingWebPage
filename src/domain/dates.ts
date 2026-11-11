@@ -83,3 +83,17 @@ export function dayNickname(date: string, today: string = toLocalDate()): string
   const d = daysBetween(date, today)
   return d === 0 ? 'Today' : d === 1 ? 'Yesterday' : null
 }
+
+const weekdayShortFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short' })
+const monthShortFmt = new Intl.DateTimeFormat(undefined, { month: 'short' })
+
+/** A date split up for the diary's date rail: day of month, short weekday, short month (with the year when it isn't this year). */
+export function dayParts(date: string, today: string = toLocalDate()): { day: number; weekday: string; month: string } {
+  const d = parseLocalDate(date)
+  const month = monthShortFmt.format(d)
+  return {
+    day: d.getDate(),
+    weekday: weekdayShortFmt.format(d),
+    month: date.slice(0, 4) === today.slice(0, 4) ? month : `${month} ${d.getFullYear()}`,
+  }
+}

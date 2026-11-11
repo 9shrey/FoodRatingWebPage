@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { EmptyState, FavMark, FoodThumb } from '../components/ui/misc'
 import { RatingDisplay } from '../components/ui/Rating'
 import { backupAdvice } from '../domain/backup'
-import { dayNickname, formatDay, relativeDays, toLocalDate } from '../domain/dates'
+import { addDays, dayNickname, dayParts, formatDay, relativeDays, toLocalDate } from '../domain/dates'
 import { buildDiary, logAgainCandidates, suggestMeals, weekSummary, type DiaryDay, type DiaryEntry } from '../domain/journal'
 import { isHomeCooking, pluralize } from '../domain/text'
 import { MEAL_LABELS, mealForHour, priceSymbol } from '../domain/types'
@@ -31,57 +31,74 @@ export function JournalPage() {
 
   const diary = useMemo(() => buildDiary(summaries, query), [summaries, query])
   const week = useMemo(() => weekSummary(summaries, today), [summaries, today])
+  /** Meals per day, for the week strip. Not affected by the search box. */
+  const mealsByDay = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const s of summaries) for (const o of s.occasions) counts.set(o.date, (counts.get(o.date) ?? 0) + 1)
+    return counts
+  }, [summaries])
 
   if (status === 'loading') return <PageSkeleton />
 
   if (data.foods.length === 0) {
     return (
       <div className="page">
-        <EmptyState
-          icon={<Utensils size={22} />}
-          title="Start your food journal"
-          actions={
-            <>
-              <button type="button" className="btn btn-primary btn-lg" onClick={() => openLog()}>
-                <Plus size={16} /> Log your first meal
-              </button>
-              <button
-                type="button"
-                className="btn btn-lg"
-                onClick={() =>
-                  repo
-                    .loadSampleData()
-                    .then(() => toast.show('Sample data loaded. Remove it any time from the banner or the Data menu.'))
-                    .catch(() => toast.error('Couldn’t load the sample data.'))
-                }
-              >
-                Explore with sample data
-              </button>
-            </>
-          }
-        >
-          Log what you eat and rate it out of 5 stars. Your journal turns into a diary of meals, a catalogue of every dish, and ideas for what to
-          eat next.
-        </EmptyState>
+        <div className="welcome">
+          <span className="welcome-plate" aria-hidden>
+            <Utensils size={34} strokeWidth={1.75} />
+          </span>
+          <h1>Start your food journal</h1>
+          <p>
+            Log what you eat and rate it out of 5 stars. Your journal turns into a diary of meals, a catalogue of every dish, and ideas for what
+            to eat next.
+          </p>
+          <div className="welcome-actions">
+            <button type="button" className="btn btn-primary btn-lg" onClick={() => openLog()}>
+              <Plus size={18} /> Log your first meal
+            </button>
+            <button
+              type="button"
+              className="btn btn-lg"
+              onClick={() =>
+                repo
+                  .loadSampleData()
+                  .then(() => toast.show('Sample data loaded. Remove it any time from the banner or the Data menu.'))
+                  .catch(() => toast.error('Couldn’t load the sample data.'))
+              }
+            >
+              Explore with sample data
+            </button>
+          </div>
+        </div>
       </div>
     )
   }
 
-  const loggedToday = diary[0]?.date === today
+  const loggedToday = (mealsByDay.get(today) ?? 0) > 0
   const visible = diary.slice(0, shownDays)
+
+  /** Jump to a day in the diary; clears the search first so the day is on the page. */
+  const goToDay = (date: string) => {
+    setQuery('')
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    requestAnimationFrame(() => document.getElementById(`day-${date}`)?.scrollIntoView({ behavior, block: 'start' }))
+  }
 
   return (
     <div className="page">
-      <header className="page-head">
+      <header className="page-head journal-head">
         <div>
-          <h1>Journal</h1>
+          <h1>
+            <span className="sr-only">Journal, </span>
+            {formatDay(today)}
+          </h1>
           <p className="muted page-sub">
-            {formatDay(today)}.{' '}
             {week.meals
               ? `${pluralize(week.meals, 'meal')} in the last 7 days${week.newFoods ? `, ${week.newFoods} of them new to you` : ''}.`
               : 'Nothing logged in the last 7 days.'}
           </p>
         </div>
+        <WeekStrip today={today} mealsByDay={mealsByDay} onPick={goToDay} onLogToday={() => openLog()} />
       </header>
 
       <LocalCopyBanner />
@@ -95,36 +112,36 @@ export function JournalPage() {
         </aside>
 
         <section className="journal-main" aria-label="Diary">
-          <div className="input-wrap journal-search">
-            <Search size={16} />
-            <input
-              type="search"
-              className="input"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value)
-                setShownDays(DAYS_PER_PAGE)
-              }}
-              placeholder="Search meals by food, place or notes"
-              aria-label="Search meals"
-            />
-            {query && (
-              <button type="button" className="icon-btn icon-btn-sm search-clear" onClick={() => setQuery('')} aria-label="Clear search">
-                <X size={14} />
-              </button>
-            )}
-          </div>
+          <button type="button" className="composer" onClick={() => openLog()}>
+            <span className="composer-plus" aria-hidden>
+              <Plus size={22} />
+            </span>
+            <span className="composer-text">{loggedToday ? 'What else did you eat today?' : `What did you eat for ${mealWord}?`}</span>
+            <kbd aria-hidden>N</kbd>
+          </button>
 
-          {!query && !loggedToday && (
-            <div className="day">
-              <h2 className="day-head">
-                Today <span className="day-date">{formatDay(today)}</span>
-              </h2>
-              <button type="button" className="day-empty" onClick={() => openLog()}>
-                <Plus size={16} aria-hidden /> Nothing logged yet. Log {mealWord}
-              </button>
+          <div className="diary-head">
+            <h2>Diary</h2>
+            <div className="input-wrap journal-search">
+              <Search size={16} />
+              <input
+                type="search"
+                className="input"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setShownDays(DAYS_PER_PAGE)
+                }}
+                placeholder="Search food, place or notes"
+                aria-label="Search meals"
+              />
+              {query && (
+                <button type="button" className="icon-btn icon-btn-sm search-clear" onClick={() => setQuery('')} aria-label="Clear search">
+                  <X size={14} />
+                </button>
+              )}
             </div>
-          )}
+          </div>
 
           {visible.map((d) => (
             <Day key={d.date} day={d} today={today} />
@@ -150,20 +167,76 @@ export function JournalPage() {
   )
 }
 
+/** The last seven days, oldest first. A day with meals jumps to it in the diary; an empty today opens the log form. */
+function WeekStrip({
+  today,
+  mealsByDay,
+  onPick,
+  onLogToday,
+}: {
+  today: string
+  mealsByDay: Map<string, number>
+  onPick: (date: string) => void
+  onLogToday: () => void
+}) {
+  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6))
+  return (
+    <ol className="week" aria-label="Last 7 days">
+      {days.map((date) => {
+        const count = mealsByDay.get(date) ?? 0
+        const isToday = date === today
+        const cls = `week-day${count ? ' has-meals' : ''}${isToday ? ' is-today' : ''}`
+        const label = `${formatDay(date, today)}: ${count ? pluralize(count, 'meal') : 'nothing logged'}`
+        const inner = (
+          <>
+            <span aria-hidden>{isToday ? 'Today' : dayParts(date, today).weekday}</span>
+            <span className="week-plate" aria-hidden>
+              {count ? count : isToday ? <Plus size={15} /> : null}
+            </span>
+          </>
+        )
+        return (
+          <li key={date}>
+            {count ? (
+              <button type="button" className={cls} onClick={() => onPick(date)} aria-label={`${label}. Show in diary`}>
+                {inner}
+              </button>
+            ) : isToday ? (
+              <button type="button" className={cls} onClick={onLogToday} aria-label={`${label}. Log a meal`}>
+                {inner}
+              </button>
+            ) : (
+              <span className={cls} role="img" aria-label={label}>
+                {inner}
+              </span>
+            )}
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
 function Day({ day, today }: { day: DiaryDay; today: string }) {
   const nick = dayNickname(day.date, today)
+  const parts = dayParts(day.date, today)
   return (
-    <div className="day">
-      <h2 className="day-head">
-        {nick ?? formatDay(day.date, today)}
-        {nick && <span className="day-date">{formatDay(day.date, today)}</span>}
-      </h2>
-      <ul className="m-list">
+    <section className={`day${day.date === today ? ' is-today' : ''}`} id={`day-${day.date}`}>
+      <h3 className="day-rail" aria-label={nick ? `${nick}, ${formatDay(day.date, today)}` : formatDay(day.date, today)}>
+        <span className="day-num num" aria-hidden>
+          {parts.day}
+        </span>
+        <span className="day-name" aria-hidden>
+          {nick ?? parts.weekday}
+        </span>
+        <span aria-hidden>{parts.month}</span>
+      </h3>
+      <ul className="day-entries">
         {day.entries.map((e) => (
           <Entry key={e.occasion.id} entry={e} />
         ))}
       </ul>
-    </div>
+    </section>
   )
 }
 
@@ -175,7 +248,7 @@ function Entry({ entry }: { entry: DiaryEntry }) {
   return (
     <li className="m-item entry">
       <button type="button" className="m-hit" onClick={() => openFood(food.id)} aria-label={`Open ${food.name}`} />
-      <FoodThumb name={food.name} photoId={o.photoId} size={48} />
+      <FoodThumb name={food.name} photoId={o.photoId} size={56} />
       <div className="entry-main">
         <div className="entry-name">
           <span className="truncate">{food.name}</span>
@@ -208,7 +281,7 @@ function NextMeal({ mealWord }: { mealWord: string }) {
         An idea for {mealWord}
       </h2>
       <button type="button" className="next-food" onClick={() => openFood(s.food.id)}>
-        <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={72} rounded />
+        <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={88} rounded />
         <span className="next-text">
           <span className="next-name">{s.food.name}</span>
           <span className="muted next-cuisine">{s.food.cuisine || (untried ? 'Not tried yet' : 'No cuisine set')}</span>
@@ -239,7 +312,7 @@ function LogAgain() {
   const items = useMemo(() => logAgainCandidates(summaries, mealForHour(new Date().getHours()), today), [summaries, today])
   if (!items.length) return null
   return (
-    <section className="panel again" aria-labelledby="again-title">
+    <section className="again" aria-labelledby="again-title">
       <h2 id="again-title" className="side-title">
         Log again
       </h2>
@@ -247,7 +320,7 @@ function LogAgain() {
         {items.map((s) => (
           <li key={s.food.id}>
             <button type="button" className="again-row" onClick={() => openLog({ foodId: s.food.id })} aria-label={`Log ${s.food.name} again`}>
-              <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={32} rounded />
+              <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={40} rounded />
               <span className="again-text">
                 <span className="again-name truncate">{s.food.name}</span>
                 <span className="faint again-sub truncate">

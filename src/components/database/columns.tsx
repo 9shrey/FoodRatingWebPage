@@ -150,7 +150,7 @@ function NameCell({ s }: { s: FoodSummary }) {
   const { openFood } = useUI()
   return (
     <div className="cell-name">
-      <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={32} />
+      <FoodThumb name={s.food.name} photoId={s.coverPhotoId} size={40} />
       <EditableCell food={s.food} field="name" label="Food name">
         <button
           type="button"
