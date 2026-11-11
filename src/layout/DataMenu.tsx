@@ -1,4 +1,4 @@
-import { Database, Download, FileJson, FileSpreadsheet, FlaskConical, Trash2, Upload } from 'lucide-react'
+import { Database, Download, FileJson, FileSpreadsheet, FlaskConical, LogOut, Trash2, Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Dialog } from '../components/ui/Dialog'
 import { Popover } from '../components/ui/Popover'
@@ -11,12 +11,14 @@ import { downloadFile, saveBackupFile, useBackupState } from '../state/backup'
 import { useJournal } from '../state/JournalProvider'
 import { useToast } from '../state/ToastProvider'
 import { useUI } from '../state/UIProvider'
-import type { ImportMode } from '../storage'
+import { cloudEnabled, type ImportMode } from '../storage'
+import { useAccount } from './AuthGate'
 
 export function DataMenu() {
   const { repo, data, hasSample, ownMeals } = useJournal()
   const backup = useBackupState()
-  const advice = backupAdvice(backup, ownMeals)
+  const account = useAccount()
+  const advice = backupAdvice(backup, cloudEnabled ? 0 : ownMeals)
   const { confirm } = useUI()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -82,7 +84,7 @@ export function DataMenu() {
   const clearAll = async () => {
     const ok = await confirm({
       title: 'Delete everything?',
-      message: `This permanently deletes all ${pluralize(data.foods.length, 'food')}, ${pluralize(data.occasions.length, 'meal')} and photos from this browser. It can’t be undone. Export a backup first if you want to keep them.`,
+      message: `This permanently deletes all ${pluralize(data.foods.length, 'food')}, ${pluralize(data.occasions.length, 'meal')} and photos from ${cloudEnabled ? 'your account on every device' : 'this browser'}. It can’t be undone. Export a backup first if you want to keep them.`,
       confirmLabel: 'Delete everything',
       danger: true,
     })
@@ -132,12 +134,24 @@ export function DataMenu() {
       >
         {(close) => (
           <div role="menu">
+            {account && (
+              <>
+                <div className="menu-label">Account</div>
+                <p className="menu-note">Signed in as {account.email}</p>
+                <button type="button" role="menuitem" className="menu-item" onClick={() => { close(); account.signOut() }}>
+                  <LogOut size={15} /> Sign out
+                </button>
+                <div className="menu-sep" />
+              </>
+            )}
             <div className="menu-label">Backup</div>
             <button type="button" role="menuitem" className="menu-item" onClick={() => { close(); exportJson() }}>
               <FileJson size={15} /> Save backup file
             </button>
             <p className="menu-note">
-              {backup.at
+              {cloudEnabled
+                ? 'Your journal syncs to your account. A backup file is an extra copy.'
+                : backup.at
                 ? `Last backup ${relativeDays(backup.at.slice(0, 10))}${advice.unsaved ? `, ${pluralize(advice.unsaved, 'meal')} since` : ''}.`
                 : ownMeals
                   ? 'Never backed up. Your journal lives only in this browser.'
@@ -218,7 +232,7 @@ export function DataMenu() {
                     <input type="radio" name="mode" checked={mode === 'replace'} onChange={() => setMode('replace')} />
                     <span>
                       <strong>Replace</strong>
-                      <span className="muted">Delete everything currently in this browser, then import.</span>
+                      <span className="muted">Delete everything currently in {cloudEnabled ? 'your journal' : 'this browser'}, then import.</span>
                     </span>
                   </label>
                 </fieldset>

@@ -71,7 +71,7 @@ export function AppShell() {
           <div className="page">
             <div className="banner banner-error" role="alert">
               <span>
-                <strong>Storage unavailable.</strong> {error} Nothing has been lost — try reloading, or open the app in a normal browser window.
+                <strong>Journal unavailable.</strong> {error} Nothing has been lost — try reloading.
               </span>
               <button type="button" className="btn btn-sm" onClick={() => location && window.location.reload()}>
                 Reload

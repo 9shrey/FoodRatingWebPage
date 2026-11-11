@@ -8,7 +8,9 @@ import { buildDiary, logAgainCandidates, suggestMeals, weekSummary, type DiaryDa
 import { isHomeCooking, pluralize } from '../domain/text'
 import { MEAL_LABELS, mealForHour, priceSymbol } from '../domain/types'
 import { PageSkeleton } from '../layout/PageSkeleton'
+import { LocalCopyBanner } from '../layout/LocalCopyBanner'
 import { SampleBanner } from '../layout/SampleBanner'
+import { cloudEnabled } from '../storage'
 import { saveBackupFile, snoozeBackupReminder, useBackupState } from '../state/backup'
 import { useJournal } from '../state/JournalProvider'
 import { useToast } from '../state/ToastProvider'
@@ -82,6 +84,7 @@ export function JournalPage() {
         </div>
       </header>
 
+      <LocalCopyBanner />
       {hasSample && <SampleBanner />}
       <BackupReminder />
 
@@ -271,7 +274,8 @@ function BackupReminder() {
   const toast = useToast()
   const state = useBackupState()
   const advice = backupAdvice(state, ownMeals)
-  if (!advice.due) return null
+  // Synced journals live in the account; the file reminder is for local-only mode.
+  if (!advice.due || cloudEnabled) return null
   const save = () =>
     saveBackupFile(repo, ownMeals)
       .then(() => toast.show('Backup saved to your downloads'))

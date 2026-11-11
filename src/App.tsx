@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { PageSkeleton } from './layout/PageSkeleton'
 import { AppShell } from './layout/AppShell'
+import { AuthGate } from './layout/AuthGate'
 import { DiscoverPage } from './pages/CollectionsPages'
 import { DatabasePage } from './pages/DatabasePage'
 import { JournalPage } from './pages/JournalPage'
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
+        <AuthGate>
         <JournalProvider>
           <UIProvider>
             <Routes>
@@ -45,6 +47,7 @@ export default function App() {
             </Routes>
           </UIProvider>
         </JournalProvider>
+        </AuthGate>
       </ToastProvider>
     </BrowserRouter>
   )

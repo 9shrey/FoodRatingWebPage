@@ -1,8 +1,9 @@
 # Palate — a personal food journal
 
 Letterboxd for food: keep a diary of what you eat, rate every meal out of 5 stars,
-and get ideas for what to eat next. Local-first — everything lives in your
-browser (IndexedDB). No account, no server.
+and get ideas for what to eat next. With Supabase configured, you sign in with an
+email link and the journal syncs across devices. Without it, the app runs local-only
+and everything lives in your browser (IndexedDB).
 
 ## Run it
 
@@ -12,6 +13,24 @@ npm run dev        # http://localhost:5173
 npm test           # unit tests (domain logic + storage)
 npm run build      # type-check and production build into dist/
 ```
+
+## Sync with Supabase
+
+1. Create a project at supabase.com.
+2. In the SQL editor, run [`supabase/schema.sql`](supabase/schema.sql). It creates the
+   `foods` and `occasions` tables (row-level security: each user sees only their own rows),
+   a private `photos` storage bucket, and enables realtime.
+3. Authentication → URL Configuration: set **Site URL** to the deployed URL and add
+   `http://localhost:5173` to **Redirect URLs**.
+4. Copy `.env.example` to `.env.local` and fill in the project URL and publishable (anon) key
+   from Project Settings → API. Set the same two variables in Vercel.
+
+On first sign-in, a browser that already has a local journal offers to copy it into the account.
+
+## Deploy (Vercel)
+
+Import the GitHub repo in Vercel (framework preset: Vite), add `VITE_SUPABASE_URL` and
+`VITE_SUPABASE_PUBLISHABLE_KEY`, and deploy. `vercel.json` sends every route to `index.html`.
 
 ## Using it
 
@@ -56,7 +75,7 @@ src/
   domain/      Pure logic, no React: types, rating maths, summaries, filters, diary and
                meal suggestions, analytics, insights (with minimum-data thresholds),
                backup reminder rules, zod schemas, CSV
-  storage/     JournalRepository interface + Dexie/IndexedDB implementation, sample data
+  storage/     JournalRepository interface; Dexie/IndexedDB and Supabase implementations; sample data
   state/       React providers/hooks: journal data, toasts, dialogs/confirm, photos, prefs
   components/  ui/ (dialog, popover, combobox, rating, ...), food/ (log dialog, detail
                panel, cards), database/ (table columns, table, filters)

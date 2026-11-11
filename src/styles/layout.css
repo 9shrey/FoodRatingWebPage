@@ -1754,3 +1754,37 @@ tr:hover .cell-pencil,
     display: none;
   }
 }
+
+/* Sign-in (cloud mode) */
+.auth-screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--s4);
+  background: var(--bg);
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: grid;
+  gap: var(--s3);
+}
+.auth-card h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  margin: 0;
+}
+.auth-card p {
+  margin: 0;
+}
+.auth-brand {
+  margin-bottom: var(--s2);
+}
+.auth-icon {
+  color: var(--accent);
+}

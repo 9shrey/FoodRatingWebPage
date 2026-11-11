@@ -31,3 +31,11 @@
   idea cycling, log-again prefill, data menu, Discover shelves, /foods?cuisine deep link, no horizontal
   overflow. Not seen in the browser: the backup reminder banner (needs 5 non-sample meals); its rule
   is unit-tested.
+
+## Session 4 — 2026-11-11: Supabase sync, GitHub, Vercel
+- Pushed to github.com/9shrey/FoodRatingWebPage (public). Vercel connector create_git_project → 403.
+- Added SupabaseJournalRepository (jsonb rows, PK (user_id,id), RLS, private photos bucket, realtime +
+  focus refetch), magic-link AuthGate, sign out in data menu, LocalCopyBanner, supabase/schema.sql,
+  .env.example. Without env vars the app stays local-only (Dexie), so tests are unchanged.
+- Checks: tsc clean, 34 tests pass, build OK. Browser: sign-in screen at 1280 and 375 with a placeholder
+  project (validation, no overflow, no console errors). Not yet exercised against a real Supabase project.

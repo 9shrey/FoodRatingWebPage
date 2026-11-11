@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { summarizeAll } from '../domain/summarize'
 import { distinctByFrequency } from '../domain/text'
 import { DEFAULT_CUISINES, type FoodSummary, type JournalData } from '../domain/types'
-import { repository, type JournalRepository } from '../storage'
+import { cloudEnabled, repository, type JournalRepository } from '../storage'
 
 export type LoadState = 'loading' | 'ready' | 'error'
 
@@ -47,7 +47,9 @@ export function JournalProvider({ children }: { children: ReactNode }) {
           console.error(err)
           setStatus('error')
           setError(
-            err instanceof Error && /indexeddb|database|quota/i.test(err.message)
+            cloudEnabled
+              ? 'Your journal couldn’t be loaded from your account. Check your connection.'
+              : err instanceof Error && /indexeddb|database|quota/i.test(err.message)
               ? 'Your browser blocked local storage. Private windows and some privacy settings do this.'
               : 'Your journal couldn’t be loaded from this browser’s storage.',
           )

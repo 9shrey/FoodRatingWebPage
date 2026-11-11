@@ -6,10 +6,10 @@ was eaten, fast logging, help deciding what to eat, a searchable food catalogue,
 and data that is hard to lose.
 
 ## Current Phase
-Complete
+Phase 7: Supabase sync + Vercel deploy (session 4)
 
 ## Next Step
-None — awaiting user feedback. Ideas not built: phone install/hosting, places list for unpinned restaurants.
+Implement SupabaseJournalRepository, auth gate, local-to-cloud copy; then user creates Supabase project and Vercel import.
 
 ### Phase 1–5: Initial build, map
 **Status:** complete (see progress.md sessions 1–2)
@@ -22,6 +22,15 @@ None — awaiting user feedback. Ideas not built: phone install/hosting, places 
       ask the browser for persistent storage
 - [x] README brought back in line with the code (5-star ratings, current fields, pages)
 - [x] Unit tests for new domain logic; browser check desktop + 375px
+
+### Phase 7: Supabase sync + Vercel deploy (session 4)
+**Status:** in_progress
+- [ ] supabase/schema.sql: foods, occasions (jsonb `data`, PK (user_id,id)), RLS, photos bucket + policies, realtime
+- [ ] SupabaseJournalRepository (in-memory cache, paged fetch, refetch on focus + realtime)
+- [ ] Magic-link sign-in gate; sign out in data menu
+- [ ] Banner to copy this browser's local (Dexie) journal into the account
+- [ ] Falls back to local Dexie when VITE_SUPABASE_* env vars are missing (tests, local dev)
+- [ ] Vercel deploy (connector create_git_project returned 403)
 
 ## Decisions Made
 | Decision | Why |
@@ -39,11 +48,16 @@ None — awaiting user feedback. Ideas not built: phone install/hosting, places 
 | Single-series teal charts, no dual axes | dataviz skill guidance |
 | Home is a diary, not the table (session 3) | A journal's daily question is "what did I eat / what next"; the table answers neither |
 | Favourites folded into Discover (session 3) | Both pages were shelves of cards with a duplicated "Highest rated"; frees a mobile tab |
+| Supabase rows store the domain object as jsonb `data` (session 4) | Mapping stays trivial; domain types unchanged; personal-scale data |
+| PK (user_id, id) | Sample data uses fixed ids like `sample-occ-1`; every user loads the same ones |
+| Photos in a private Storage bucket at `<uid>/<photoId>` | 1280px JPEGs are 200–400 KB; DB free tier is smaller than storage |
+| No offline queue | One person, two devices; online writes keep it simple. Local mode still exists without env vars |
 | Keep hand-rolled Dialog/Popover/Combobox (session 3) | Native dialog, focus handling and keyboard support already work; a component library would mean a restyle for no user-visible gain |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |---|---|---|
+| Vercel connector create_git_project 403 forbidden | 1 | Not retried; user imports via dashboard or CLI |
 | Insight "more than anything else" on 2 foods | 1 | Require ≥5 tried foods |
 | React autoFocus fires before showModal | 1 | Dialog focuses [data-autofocus] after opening |
 | Sample data duplicated a real food | 1 | Skip sample foods whose name exists |
