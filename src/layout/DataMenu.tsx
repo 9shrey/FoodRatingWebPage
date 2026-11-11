@@ -1,4 +1,4 @@
-import { Database, Download, FileJson, FileSpreadsheet, FlaskConical, LogOut, Trash2, Upload } from 'lucide-react'
+import { Database, Download, FileJson, FileSpreadsheet, FlaskConical, LogOut, Trash2, Upload, UserPlus } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Dialog } from '../components/ui/Dialog'
 import { Popover } from '../components/ui/Popover'
@@ -12,6 +12,7 @@ import { useJournal } from '../state/JournalProvider'
 import { useToast } from '../state/ToastProvider'
 import { useUI } from '../state/UIProvider'
 import { cloudEnabled, type ImportMode } from '../storage'
+import { AccessRequestsDialog, useAccessRequests } from './AccessRequests'
 import { useAccount } from './AuthGate'
 
 export function DataMenu() {
@@ -25,6 +26,8 @@ export function DataMenu() {
   const [check, setCheck] = useState<(ImportCheck & { fileName: string }) | null>(null)
   const [mode, setMode] = useState<ImportMode>('merge')
   const [busy, setBusy] = useState(false)
+  const access = useAccessRequests(!!account?.isAdmin)
+  const [accessOpen, setAccessOpen] = useState(false)
 
   const exportJson = async () => {
     try {
@@ -123,12 +126,12 @@ export function DataMenu() {
           <button
             type="button"
             className="icon-btn"
-            aria-label={advice.due ? 'Data: a backup is due' : 'Data: backup, import and export'}
+            aria-label={access.pending > 0 ? `Data: ${access.pending} access requests waiting` : advice.due ? 'Data: a backup is due' : 'Data: backup, import and export'}
             data-tip="Backup & data"
             {...p}
           >
             <Database size={18} />
-            {advice.due && <span className="icon-dot" aria-hidden />}
+            {(advice.due || access.pending > 0) && <span className="icon-dot" aria-hidden />}
           </button>
         )}
       >
@@ -141,6 +144,11 @@ export function DataMenu() {
                 <button type="button" role="menuitem" className="menu-item" onClick={() => { close(); account.signOut() }}>
                   <LogOut size={15} /> Sign out
                 </button>
+                {account.isAdmin && (
+                  <button type="button" role="menuitem" className="menu-item" onClick={() => { close(); setAccessOpen(true) }}>
+                    <UserPlus size={15} /> Access requests{access.pending > 0 && ` (${access.pending})`}
+                  </button>
+                )}
                 <div className="menu-sep" />
               </>
             )}
@@ -176,6 +184,8 @@ export function DataMenu() {
           </div>
         )}
       </Popover>
+
+      <AccessRequestsDialog open={accessOpen} onClose={() => setAccessOpen(false)} requests={access.requests} reload={access.reload} />
 
       <Dialog
         open={!!check}

@@ -9,7 +9,7 @@ and data that is hard to lose.
 Phase 7: Supabase sync + Vercel deploy (session 4)
 
 ## Next Step
-Implement SupabaseJournalRepository, auth gate, local-to-cloud copy; then user creates Supabase project and Vercel import.
+Waiting on user: Vercel identity check (email code) on the first deploy of project food-rating-web-page. Then confirm the URL matches Supabase Site URL and test live.
 
 ### Phase 1–5: Initial build, map
 **Status:** complete (see progress.md sessions 1–2)
@@ -25,11 +25,11 @@ Implement SupabaseJournalRepository, auth gate, local-to-cloud copy; then user c
 
 ### Phase 7: Supabase sync + Vercel deploy (session 4)
 **Status:** in_progress
-- [ ] supabase/schema.sql: foods, occasions (jsonb `data`, PK (user_id,id)), RLS, photos bucket + policies, realtime
-- [ ] SupabaseJournalRepository (in-memory cache, paged fetch, refetch on focus + realtime)
-- [ ] Magic-link sign-in gate; sign out in data menu
-- [ ] Banner to copy this browser's local (Dexie) journal into the account
-- [ ] Falls back to local Dexie when VITE_SUPABASE_* env vars are missing (tests, local dev)
+- [x] supabase/schema.sql: foods, occasions (jsonb `data`, PK (user_id,id)), RLS, photos bucket + policies, realtime
+- [x] SupabaseJournalRepository (in-memory cache, paged fetch, refetch on focus + realtime)
+- [x] Magic-link sign-in gate; sign out in data menu
+- [x] Banner to copy this browser's local (Dexie) journal into the account
+- [x] Falls back to local Dexie when VITE_SUPABASE_* env vars are missing (tests, local dev)
 - [ ] Vercel deploy (connector create_git_project returned 403)
 
 ## Decisions Made
@@ -52,12 +52,15 @@ Implement SupabaseJournalRepository, auth gate, local-to-cloud copy; then user c
 | PK (user_id, id) | Sample data uses fixed ids like `sample-occ-1`; every user loads the same ones |
 | Photos in a private Storage bucket at `<uid>/<photoId>` | 1280px JPEGs are 200–400 KB; DB free tier is smaller than storage |
 | No offline queue | One person, two devices; online writes keep it simple. Local mode still exists without env vars |
+| Supabase project `palate` (edfsrymqjrowlijwxqwc, ap-south-1); publishable key committed in .env.production | Key is public by design; avoids typing keys into Vercel; RLS protects data |
 | Keep hand-rolled Dialog/Popover/Combobox (session 3) | Native dialog, focus handling and keyboard support already work; a component library would mean a restyle for no user-visible gain |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |---|---|---|
 | Vercel connector create_git_project 403 forbidden | 1 | Not retried; user imports via dashboard or CLI |
+| Vercel connector create_project 403; get_project 404 for dashboard-made project | 2 | Connector seems scoped elsewhere; used dashboard in Chrome |
+| Adding Supabase redirect URLs (wildcard) blocked by auto-mode classifier | 1 | Skipped; Site URL alone covers production |
 | Insight "more than anything else" on 2 foods | 1 | Require ≥5 tried foods |
 | React autoFocus fires before showModal | 1 | Dialog focuses [data-autofocus] after opening |
 | Sample data duplicated a real food | 1 | Skip sample foods whose name exists |
