@@ -13,83 +13,135 @@
   top: 8px;
 }
 
-.topbar {
+/* Desktop: a dark aubergine rail down the left. It is the one dark surface in the app. */
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  min-height: 100dvh;
+}
+.rail {
   position: sticky;
   top: 0;
   z-index: 30;
-  height: var(--topbar-h);
-  background: rgba(251, 252, 254, 0.86);
-  backdrop-filter: saturate(1.4) blur(12px);
-  border-bottom: 1px solid var(--line);
-}
-.topbar-inner {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--s8);
-  height: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 var(--s6);
+  height: 100dvh;
+  padding: var(--s6) var(--s4) var(--s5);
+  background: var(--rail);
+  color: var(--rail-ink);
 }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: var(--ink);
+  gap: 12px;
+  padding: 0 var(--s2);
+  color: var(--rail-ink);
   text-decoration: none;
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 23px;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  font-stretch: 88%;
+  font-size: 34px;
+  letter-spacing: -0.05em;
+  line-height: 1;
 }
-/* The mark: a cobalt-rimmed plate seen from above, same drawing as the food plates. */
+/* The mark: a tomato-rimmed plate seen from above, same drawing as the food plates. */
 .brand-mark {
-  width: 30px;
-  height: 30px;
+  flex: none;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: radial-gradient(
     circle closest-side,
-    #fff 0 52%,
-    var(--accent) 54% 60%,
-    #fff 62% 72%,
+    var(--rail-ink) 0 46%,
+    var(--accent) 48% 58%,
+    var(--rail-ink) 60% 72%,
     var(--accent) 74% 100%
   );
-  box-shadow: 0 1px 3px rgba(18, 26, 46, 0.2);
-}
-.brand-mark span {
-  display: none;
 }
 .nav {
-  display: flex;
-  gap: 4px;
+  display: grid;
+  gap: 2px;
 }
-/* The current page is a filled pill, the same shape as every other control. */
 .nav-link {
-  padding: 8px 14px;
-  border-radius: var(--r-pill);
-  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  color: var(--rail-muted);
   text-decoration: none;
-  font-size: var(--fs-sm);
-  font-weight: 550;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   transition: color 120ms var(--ease), background 120ms var(--ease);
 }
+.nav-link svg {
+  flex: none;
+  opacity: 0.8;
+}
 .nav-link:hover {
-  color: var(--ink);
-  background: var(--surface-3);
+  color: var(--rail-ink);
+  background: var(--rail-2);
 }
 .nav-link.active {
-  color: var(--accent-ink);
-  background: var(--accent-soft);
+  color: var(--ink);
+  background: var(--rail-ink);
 }
-.topbar-actions {
-  margin-left: auto;
+.nav-link.active svg {
+  color: var(--accent);
+  opacity: 1;
+}
+.rail-foot {
+  margin-top: auto;
   display: flex;
   align-items: center;
   gap: var(--s2);
 }
+.rail-foot .log-btn {
+  flex: 1;
+}
+/* The data menu trigger sits on the dark rail and opens upward, out of the rail. */
+.rail .icon-btn {
+  width: 48px;
+  height: 48px;
+  background: var(--rail-2);
+  color: var(--rail-ink);
+}
+.rail .icon-btn:hover {
+  background: #4a2f53;
+  color: #fff;
+}
+.rail .popover {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  color: var(--ink);
+}
+@media (max-width: 767px) {
+  .rail .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .rail .popover {
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: auto;
+    right: 0;
+  }
+}
+.rail .btn-primary {
+  box-shadow: none;
+}
+.rail :focus-visible {
+  outline-color: var(--rail-ink);
+}
 
 .main {
-  min-height: calc(100dvh - var(--topbar-h));
+  min-width: 0;
+  min-height: 100dvh;
 }
 
 .fab,
@@ -98,8 +150,26 @@
 }
 
 @media (max-width: 767px) {
-  .topbar-inner {
+  /* Phone: the rail folds into a dark top bar; navigation moves to the tab bar. */
+  .shell {
+    display: block;
+  }
+  .rail {
+    flex-direction: row;
+    align-items: center;
+    height: var(--topbar-h);
     padding: 0 var(--s4);
+  }
+  .brand {
+    font-size: 26px;
+    padding: 0;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+  .rail-foot {
+    margin: 0 0 0 auto;
   }
   .nav,
   .log-btn {
@@ -118,9 +188,8 @@
     grid-template-columns: repeat(5, 1fr);
     height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
     padding: 0 var(--s1) env(safe-area-inset-bottom);
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--line);
+    background: var(--rail);
+    border-top: none;
   }
   .tab {
     display: grid;
@@ -139,11 +208,15 @@
     border-radius: var(--r-pill);
     transition: background 160ms var(--ease);
   }
+  .tab {
+    color: var(--rail-muted);
+  }
   .tab.active {
-    color: var(--accent-ink);
+    color: var(--rail-ink);
   }
   .tab.active svg {
-    background: var(--accent-soft);
+    background: var(--accent);
+    color: #fff;
   }
   /* Thumb-reachable log button, above the tab bar on the right. */
   .fab {
@@ -159,7 +232,7 @@
     border-radius: 50%;
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 2px 4px rgba(29, 74, 166, 0.3), 0 10px 24px -6px rgba(29, 74, 166, 0.55);
+    box-shadow: 0 2px 4px rgba(211, 58, 31, 0.3), 0 10px 24px -6px rgba(211, 58, 31, 0.55);
     transition: transform 120ms var(--ease);
   }
   .fab:active {
@@ -744,7 +817,7 @@ tr:hover .cell-pencil,
 }
 .card-fav .fav-btn {
   background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 1px 3px rgba(18, 26, 46, 0.12);
+  box-shadow: 0 1px 3px rgba(36, 18, 43, 0.12);
 }
 .card-body {
   display: grid;
@@ -756,7 +829,7 @@ tr:hover .cell-pencil,
   align-items: center;
   gap: 6px;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 19px;
   line-height: 1.25;
 }
@@ -911,7 +984,7 @@ tr:hover .cell-pencil,
 }
 .detail-title h2 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 28px;
   letter-spacing: -0.01em;
   line-height: 1.15;
@@ -1062,7 +1135,7 @@ tr:hover .cell-pencil,
 .stat-value {
   font-family: var(--font-display);
   font-size: var(--fs-3xl);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
@@ -1384,7 +1457,7 @@ tr:hover .cell-pencil,
 
 .place-detail h2 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 24px;
   margin-top: var(--s2);
 }
@@ -1474,7 +1547,7 @@ tr:hover .cell-pencil,
     border-top: 1px solid var(--line);
     border-radius: 24px 24px 0 0;
     margin-top: -20px;
-    box-shadow: 0 -8px 24px rgba(18, 26, 46, 0.1);
+    box-shadow: 0 -8px 24px rgba(36, 18, 43, 0.1);
     padding: var(--s4) var(--s4) var(--s5);
     position: relative;
     z-index: 1;
@@ -1647,9 +1720,11 @@ button.week-day:hover {
 }
 .day-num {
   font-family: var(--font-display);
-  font-size: 34px;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  font-stretch: 88%;
+  font-size: 46px;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
   color: var(--ink);
   margin-bottom: 4px;
 }
@@ -1704,6 +1779,8 @@ button.week-day:hover {
   align-items: center;
   gap: 8px;
   font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
   font-size: 19px;
   line-height: 1.3;
 }
@@ -1764,6 +1841,8 @@ button.week-day:hover {
 }
 .next-name {
   font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   font-size: 26px;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -1871,7 +1950,7 @@ button.week-day:hover {
     var(--accent) 87.5% 90%,
     #fff 90.5% 100%
   );
-  box-shadow: 0 2px 4px rgba(18, 26, 46, 0.08), 0 18px 40px -16px rgba(29, 74, 166, 0.45);
+  box-shadow: 0 2px 4px rgba(36, 18, 43, 0.08), 0 18px 40px -16px rgba(211, 58, 31, 0.45);
 }
 .welcome p {
   max-width: 46ch;
@@ -2026,7 +2105,7 @@ button.week-day:hover {
   display: grid;
   place-items: center;
   padding: var(--s4);
-  background: radial-gradient(120% 80% at 50% 0%, var(--accent-soft), var(--bg) 60%);
+  background: var(--rail);
 }
 .auth-card {
   width: 100%;
@@ -2040,9 +2119,10 @@ button.week-day:hover {
 }
 .auth-card h1 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: var(--fs-2xl);
-  line-height: 1.15;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   margin: 0;
 }
 .auth-card .form-stack {
@@ -2064,6 +2144,9 @@ button.week-day:hover {
 }
 .auth-brand {
   margin-bottom: var(--s4);
+  padding: 0;
+  color: var(--ink);
+  font-size: 40px;
 }
 .auth-icon {
   color: var(--accent);

@@ -42,27 +42,24 @@ export function AppShell() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <header className="topbar">
-        <div className="topbar-inner">
-          <NavLink to="/" className="brand" aria-label="Palate, home">
-            <span className="brand-mark" aria-hidden>
-              <span />
-            </span>
-            Palate
-          </NavLink>
-          <nav className="nav" aria-label="Main">
-            {NAV.map((n) => (
-              <NavLink key={n.to} to={n.to} end={n.end} className="nav-link">
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="topbar-actions">
-            <DataMenu />
-            <button type="button" className="btn btn-primary log-btn" onClick={() => openLog()} data-tip="Shortcut: N">
-              <Plus size={16} /> Log food
-            </button>
-          </div>
+      <header className="rail">
+        <NavLink to="/" className="brand" aria-label="Palate, home">
+          <span className="brand-mark" aria-hidden />
+          <span className="brand-word">Palate</span>
+        </NavLink>
+        <nav className="nav" aria-label="Main">
+          {NAV.map((n) => (
+            <NavLink key={n.to} to={n.to} end={n.end} className="nav-link">
+              <n.icon size={20} aria-hidden />
+              {n.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="rail-foot">
+          <button type="button" className="btn btn-primary btn-lg log-btn" onClick={() => openLog()} data-tip="Shortcut: N">
+            <Plus size={18} /> Log food
+          </button>
+          <DataMenu />
         </div>
       </header>
 

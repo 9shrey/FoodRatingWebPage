@@ -242,7 +242,7 @@ export const columns: ColumnDef<FoodSummary, unknown>[] = [
     accessorFn: (s) => s.food.name.toLowerCase(),
     header: 'Food',
     enableHiding: false,
-    size: 240,
+    size: 320,
     cell: ({ row }) => <NameCell s={row.original} />,
   },
   {

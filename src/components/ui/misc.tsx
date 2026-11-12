@@ -35,14 +35,14 @@ export function FavMark({ size = 14 }: { size?: number }) {
   return <Heart size={size} className="fav-mark" aria-label="Favourite" role="img" />
 }
 
-/** Porcelain glazes for photo-less foods ([tablecloth, rim]), picked deterministically from the name. */
+/** Market-stall glazes for photo-less foods ([tablecloth, rim]), picked deterministically from the name. */
 const GLAZES: [string, string][] = [
-  ['#e6edfa', '#1d4aa6'],
-  ['#e9eef3', '#3d5a7a'],
-  ['#fbf1d9', '#a26a00'],
-  ['#fbe7e4', '#b23a31'],
-  ['#e5f0ea', '#2f6b4f'],
-  ['#ece9f6', '#2c4fb8'],
+  ['#fde6df', '#c2361c'],
+  ['#fff0c7', '#9a6400'],
+  ['#e1f0e4', '#2e7d4f'],
+  ['#f1e3f4', '#6b2d7b'],
+  ['#dfedf3', '#2c6a86'],
+  ['#fbe3ea', '#b0204f'],
 ]
 
 function hash(s: string): number {

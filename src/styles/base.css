@@ -1,49 +1,56 @@
 @import '@fontsource-variable/instrument-sans';
-@import '@fontsource/young-serif';
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
 
 :root {
-  /* Palette: blue-and-white porcelain. Cobalt is the only action colour. */
-  --bg: #fbfcfe;
+  /* Palette: a market stall. Aubergine ground and ink, tomato is the only action colour,
+     saffron for stars, plum for charts. */
+  --bg: #f2eef6;
   --surface: #ffffff;
-  --surface-2: #f4f6fa;
-  --surface-3: #ebeff6;
-  --ink: #121a2e;
-  --ink-2: #2f3a52;
-  --muted: #5d6779;
-  --faint: #7b8597;
-  --line: #e7ebf2;
-  --line-strong: #d2d9e5;
+  --surface-2: #f8f5fa;
+  --surface-3: #ece6f1;
+  --ink: #24122b;
+  --ink-2: #45304c;
+  --muted: #6e5f74;
+  --faint: #8c7f91;
+  --line: #e4dcea;
+  --line-strong: #d2c6da;
 
-  --accent: #1d4aa6;
-  --accent-hover: #163b87;
-  --accent-ink: #143375;
-  --accent-soft: #e6edfa;
-  --accent-line: #b9cbef;
+  --accent: #d33a1f;
+  --accent-hover: #b52e16;
+  --accent-ink: #9e2610;
+  --accent-soft: #fde6df;
+  --accent-line: #f6b9a9;
 
-  --fav: #d1433a;
-  --star: #f0ae1a;
-  --star-ink: #b98000;
+  /* The rail: the one dark surface in the app. */
+  --rail: #2a1630;
+  --rail-2: #3a2242;
+  --rail-ink: #f6eef8;
+  --rail-muted: #b9a6bf;
+
+  --fav: #e0245e;
+  --star: #f2a900;
+  --star-ink: #a86f00;
   --danger: #b42318;
   --danger-soft: #fdecea;
-  --warn-soft: #fff6dd;
+  --warn-soft: #fff1c7;
   --warn-ink: #6e4700;
 
-  /* Chart series (cobalt family, no rainbow) */
-  --chart-1: #1d4aa6;
-  --chart-2: #6f8fd3;
-  --chart-3: #b9cbef;
-  --chart-grid: #e8edf5;
+  /* Chart series (plum family, no rainbow) */
+  --chart-1: #6b2d7b;
+  --chart-2: #a879b5;
+  --chart-3: #d9c3e0;
+  --chart-grid: #ece6f1;
 
   /* Type */
-  --font-display: 'Young Serif', 'Iowan Old Style', Georgia, serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   --font: 'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --fs-xs: 12.5px;
   --fs-sm: 14px;
   --fs-md: 15px;
   --fs-lg: 17px;
   --fs-xl: 21px;
-  --fs-2xl: 28px;
-  --fs-3xl: 40px;
+  --fs-2xl: 30px;
+  --fs-3xl: 68px;
 
   /* Space (4px grid) */
   --s1: 4px;
@@ -59,18 +66,19 @@
   /* Shape: buttons and chips are pills, fields are softly rounded, panels rounder still. */
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 20px;
+  --r-lg: 24px;
   --r-pill: 999px;
 
   /* One height for buttons and fields so toolbars line up. */
   --ctl-h: 40px;
 
-  --shadow-pop: 0 1px 2px rgba(18, 26, 46, 0.05), 0 10px 30px rgba(18, 26, 46, 0.1);
-  --shadow-panel: 0 0 0 1px rgba(18, 26, 46, 0.04), 0 24px 64px rgba(18, 26, 46, 0.16);
-  --shadow-raise: 0 1px 2px rgba(18, 26, 46, 0.04), 0 8px 24px -10px rgba(18, 26, 46, 0.14);
+  --shadow-pop: 0 1px 2px rgba(36, 18, 43, 0.05), 0 10px 30px rgba(36, 18, 43, 0.1);
+  --shadow-panel: 0 0 0 1px rgba(36, 18, 43, 0.04), 0 24px 64px rgba(36, 18, 43, 0.16);
+  --shadow-raise: 0 1px 2px rgba(36, 18, 43, 0.04), 0 8px 24px -10px rgba(36, 18, 43, 0.14);
 
   --ease: cubic-bezier(0.2, 0, 0, 1);
-  --topbar-h: 64px;
+  --topbar-h: 0px;
+  --rail-w: 252px;
   --tabbar-h: 64px;
 
   color-scheme: light;
@@ -108,21 +116,26 @@ p {
 h1 {
   font-family: var(--font-display);
   font-size: var(--fs-3xl);
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.1;
+  font-weight: 800;
+  font-stretch: 88%;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
   text-wrap: balance;
 }
 
 h2 {
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 h3 {
+  font-family: var(--font-display);
   font-size: var(--fs-lg);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 button,
@@ -191,7 +204,8 @@ img {
 @media (max-width: 767px) {
   :root {
     --fs-md: 16px;
-    --fs-3xl: 30px;
+    --fs-3xl: 44px;
     --ctl-h: 44px;
+    --topbar-h: 60px;
   }
 }

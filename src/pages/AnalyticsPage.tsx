@@ -30,9 +30,9 @@ import { useJournal } from '../state/JournalProvider'
 import { useUI } from '../state/UIProvider'
 import { useIsMobile } from '../state/usePersistentState'
 
-const COBALT = '#1d4aa6'
-const GRID = '#e8edf5'
-const AXIS = { fontSize: 12, fill: '#5d6779' }
+const BAR = '#6b2d7b'
+const GRID = '#ece6f1'
+const AXIS = { fontSize: 12, fill: '#6e5f74' }
 
 export function AnalyticsPage() {
   const { summaries, status } = useJournal()
@@ -173,8 +173,8 @@ function Analytics({ summaries }: { summaries: FoodSummary[] }) {
               <CartesianGrid vertical={false} stroke={GRID} />
               <XAxis dataKey="label" tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} />
               <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
-              <Tooltip cursor={{ fill: '#f1f4f9' }} content={<ChartTip format={(p) => `${p.label} ★: ${p.value} ${distMode}`} />} />
-              <Bar dataKey="count" fill={COBALT} radius={[4, 4, 0, 0]} maxBarSize={24} />
+              <Tooltip cursor={{ fill: '#f5f0f8' }} content={<ChartTip format={(p) => `${p.label} ★: ${p.value} ${distMode}`} />} />
+              <Bar dataKey="count" fill={BAR} radius={[4, 4, 0, 0]} maxBarSize={24} />
             </BarChart>
           </ChartBox>
         </div>
@@ -196,8 +196,8 @@ function Analytics({ summaries }: { summaries: FoodSummary[] }) {
                 <CartesianGrid vertical={false} stroke={GRID} />
                 <XAxis dataKey="month" tickFormatter={formatMonth} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval="preserveStartEnd" minTickGap={12} />
                 <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
-                <Tooltip cursor={{ fill: '#f1f4f9' }} content={<ChartTip format={(p) => `${formatMonth(String(p.label))}: ${pluralize(Number(p.value), 'new food')}`} />} />
-                <Bar dataKey="newFoods" fill={COBALT} radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Tooltip cursor={{ fill: '#f5f0f8' }} content={<ChartTip format={(p) => `${formatMonth(String(p.label))}: ${pluralize(Number(p.value), 'new food')}`} />} />
+                <Bar dataKey="newFoods" fill={BAR} radius={[4, 4, 0, 0]} maxBarSize={24} />
               </BarChart>
             </ChartBox>
           </div>
@@ -209,8 +209,8 @@ function Analytics({ summaries }: { summaries: FoodSummary[] }) {
                 <CartesianGrid vertical={false} stroke={GRID} />
                 <XAxis dataKey="month" tickFormatter={formatMonth} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval="preserveStartEnd" minTickGap={12} />
                 <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
-                <Tooltip cursor={{ fill: '#f1f4f9' }} content={<ChartTip format={(p) => `${formatMonth(String(p.label))}: ${pluralize(Number(p.value), 'meal')}`} />} />
-                <Bar dataKey="occasions" fill={COBALT} radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Tooltip cursor={{ fill: '#f5f0f8' }} content={<ChartTip format={(p) => `${formatMonth(String(p.label))}: ${pluralize(Number(p.value), 'meal')}`} />} />
+                <Bar dataKey="occasions" fill={BAR} radius={[4, 4, 0, 0]} maxBarSize={24} />
               </BarChart>
             </ChartBox>
           </div>
@@ -401,14 +401,14 @@ function CuisineSection({ cuisines }: { cuisines: GroupStat[] }) {
               <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 36, bottom: 0, left: 0 }}>
                 <CartesianGrid horizontal={false} stroke={GRID} />
                 <XAxis type="number" hide domain={metric === 'avgRating' ? [0, 5] : [0, 'auto']} />
-                <YAxis type="category" dataKey="name" width={isMobile ? 96 : 120} tick={{ ...AXIS, fill: '#2f3a52' }} tickLine={false} axisLine={false} />
-                <Tooltip cursor={{ fill: '#f1f4f9' }} content={<ChartTip format={(p) => `${metric === 'avgRating' ? formatRating(Number(p.value)) : p.value} ${labelFor}`} />} />
+                <YAxis type="category" dataKey="name" width={isMobile ? 96 : 120} tick={{ ...AXIS, fill: '#45304c' }} tickLine={false} axisLine={false} />
+                <Tooltip cursor={{ fill: '#f5f0f8' }} content={<ChartTip format={(p) => `${metric === 'avgRating' ? formatRating(Number(p.value)) : p.value} ${labelFor}`} />} />
                 <Bar
                   dataKey="value"
-                  fill={COBALT}
+                  fill={BAR}
                   radius={[0, 4, 4, 0]}
                   maxBarSize={18}
-                  label={{ position: 'right', fontSize: 12, fill: '#2f3a52', formatter: (v: unknown) => (metric === 'avgRating' ? formatRating(Number(v)) : String(v)) }}
+                  label={{ position: 'right', fontSize: 12, fill: '#45304c', formatter: (v: unknown) => (metric === 'avgRating' ? formatRating(Number(v)) : String(v)) }}
                 />
               </BarChart>
             </ChartBox>
