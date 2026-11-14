@@ -2187,3 +2187,10 @@ button.week-day:hover {
   display: flex;
   gap: var(--s2);
 }
+.auth-card .auth-aside {
+  text-align: center;
+  font-size: var(--fs-sm);
+}
+.auth-card .auth-aside .link-btn {
+  width: auto;
+}

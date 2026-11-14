@@ -40,6 +40,12 @@ Refresh is merged into main locally (not pushed, so not deployed). Phase 7 still
 - [x] Cards image-first; table, dialogs, banners, first-run welcome, sign-in screen restyled
 - [x] tsc + 34 tests + build; browser check at 1280 and 375
 
+### Phase 9: Password sign-in (session 6)
+**Status:** complete
+- [x] Email → password (or choose one if new); email link only for old accounts and "forgot it"
+- [x] account_status() / has_password() RPCs, keyed on user metadata `password_set` (applied to the palate project)
+- [x] Allowlisted sign-ups are auto-confirmed by the enforce_allowlist trigger
+
 ## Decisions Made
 | Decision | Why |
 |---|---|
@@ -57,6 +63,7 @@ Refresh is merged into main locally (not pushed, so not deployed). Phase 7 still
 | Home is a diary, not the table (session 3) | A journal's daily question is "what did I eat / what next"; the table answers neither |
 | Favourites folded into Discover (session 3) | Both pages were shelves of cards with a duplicated "Highest rated"; frees a mobile tab |
 | Supabase rows store the domain object as jsonb `data` (session 4) | Mapping stays trivial; domain types unchanged; personal-scale data |
+| `password_set` metadata, not encrypted_password (session 6) | Supabase gives link-created accounts a random password, so the column can't tell who chose one |
 | PK (user_id, id) | Sample data uses fixed ids like `sample-occ-1`; every user loads the same ones |
 | Photos in a private Storage bucket at `<uid>/<photoId>` | 1280px JPEGs are 200–400 KB; DB free tier is smaller than storage |
 | No offline queue | One person, two devices; online writes keep it simple. Local mode still exists without env vars |

@@ -124,6 +124,42 @@ grant execute on function public.access_status(text), public.request_access(text
 grant execute on function public.is_allowed(), public.is_admin(), public.list_access_requests(),
   public.decide_access(text, boolean) to authenticated;
 
+-- Password sign-in. For an allowlisted email, what the sign-in screen should ask for:
+--   'password' — the account exists and has a password
+--   'new'      — no account yet: choose a password to create one
+--   'link'     — the account predates passwords: one email link, then set a password
+-- 'password_set' is user metadata the app writes when someone chooses a password. The
+-- password column can't be used: Supabase gives link-created accounts a random one.
+-- Anything not allowlisted gets access_status() instead.
+create or replace function public.account_status(p_email text)
+returns text
+language sql stable security definer set search_path = ''
+as $$
+  select case
+    when public.access_status(p_email) <> 'allowed' then public.access_status(p_email)
+    when not exists (select 1 from auth.users where lower(email) = lower(trim(p_email))) then 'new'
+    when exists (
+      select 1 from auth.users
+      where lower(email) = lower(trim(p_email)) and (raw_user_meta_data ->> 'password_set') = 'true'
+    ) then 'password'
+    else 'link'
+  end;
+$$;
+
+-- Does the signed-in user have a password yet?
+create or replace function public.has_password()
+returns boolean
+language sql stable security definer set search_path = ''
+as $$
+  select exists (
+    select 1 from auth.users where id = (select auth.uid()) and (raw_user_meta_data ->> 'password_set') = 'true'
+  );
+$$;
+
+revoke all on function public.account_status(text), public.has_password() from public, anon, authenticated;
+grant execute on function public.account_status(text) to anon, authenticated;
+grant execute on function public.has_password() to authenticated;
+
 -- Block account creation for emails that are not on the allowlist.
 create or replace function public.enforce_allowlist()
 returns trigger
@@ -133,6 +169,8 @@ begin
   if not exists (select 1 from public.allowed_emails where email = lower(coalesce(new.email, ''))) then
     raise exception 'Palate is invite-only. Request access first.';
   end if;
+  -- Allowlisted emails were already vetted, so sign-up needs no confirmation email.
+  new.email_confirmed_at := coalesce(new.email_confirmed_at, now());
   return new;
 end;
 $$;

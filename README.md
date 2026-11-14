@@ -1,8 +1,8 @@
 # Palate — a personal food journal
 
 Letterboxd for food: keep a diary of what you eat, rate every meal out of 5 stars,
-and get ideas for what to eat next. With Supabase configured, you sign in with an
-email link and the journal syncs across devices. Without it, the app runs local-only
+and get ideas for what to eat next. With Supabase configured, you sign in with your
+email and a password and the journal syncs across devices. Without it, the app runs local-only
 and everything lives in your browser (IndexedDB).
 
 ## Run it
@@ -24,6 +24,11 @@ npm run build      # type-check and production build into dist/
    `http://localhost:5173` to **Redirect URLs**.
 4. Copy `.env.example` to `.env.local` and fill in the project URL and publishable (anon) key
    from Project Settings → API. Set the same two variables in Vercel.
+
+Then run [`supabase/access.sql`](supabase/access.sql) for invite-only access. Approved emails
+choose a password the first time they sign in; there's no confirmation email. Accounts made
+before passwords existed get one email link, then set a password. "Forgot it?" on the sign-in
+screen emails a link and asks for a new password.
 
 On first sign-in, a browser that already has a local journal offers to copy it into the account.
 
